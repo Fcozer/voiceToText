@@ -40,6 +40,30 @@ def transcribe_audio():
 
     return jsonify({'transcribed_text': transcribed_text})
 
+@app.route('/chatgpt', methods=['POST'])
+def generate_response():
+    # Kullanıcıdan gelen metni al
+    transcribed_text = request.form['transcribed_text']
+
+    # ChatGPT API'ye göndermek için endpoint ve API anahtarını belirle
+    chatgpt_endpoint = "https://api.openai.com/v1/completions"
+    api_key = "YOUR_OPENAI_API_KEY"
+
+    # ChatGPT API'ye gönderilecek veriyi hazırla
+    data = {
+        "prompt": transcribed_text,
+        "max_tokens": 100
+    }
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {api_key}"
+    }
+
+    # ChatGPT API'ye istek gönder
+    response = requests.post(chatgpt_endpoint, json=data, headers=headers)
+    chatgpt_output = response.json()['choices'][0]['text']
+
+    return jsonify({'chatgpt_output': chatgpt_output})
 
 if __name__ == '__main__':
     app.run(debug=True)
